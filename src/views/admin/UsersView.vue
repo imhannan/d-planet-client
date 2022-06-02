@@ -2,6 +2,7 @@
 import { ref, reactive, onMounted } from "vue";
 import LoadingButton from "@/components/loading/LoadingButton.vue";
 import BaseModal from "@/components/modals/BaseModal.vue";
+import UserForm from "@/components/forms/UserForm.vue";
 import { fetchAll, create, update, remove } from "@/services/user";
 
 const users = ref([]);
@@ -165,137 +166,33 @@ const handleSubmit = async (type: string) => {
     </div>
     <!-- end users list -->
     <!-- create modal -->
-    <base-modal
-      size="lg"
-      v-if="modalOpen && currentModal === 'create'"
-      @close="toggleModal"
-      :footer="false"
-    >
-      <template #header>
-        <div>Create A new User</div>
-      </template>
-      <form @submit.prevent="handleSubmit('create')">
-        <div class="flex flex-col space-y-2">
-          <div class="flex flex-col space-y-2">
-            <label for="name" class="mb-2 block text-sm font-bold text-gray-700"
-              >Name</label
-            >
-            <input
-              id="name"
-              class="focus:shadow-outline w-full appearance-none rounded border py-2 px-3 leading-tight text-gray-700 shadow focus:outline-none"
-              type="text"
-              placeholder="John Doe"
-              v-model="form.name"
-            />
-          </div>
-          <div class="flex flex-col space-y-2">
-            <label
-              for="email"
-              class="mb-2 block text-sm font-bold text-gray-700"
-              >Email</label
-            >
-            <input
-              id="email"
-              class="focus:shadow-outline w-full appearance-none rounded border py-2 px-3 leading-tight text-gray-700 shadow focus:outline-none"
-              type="email"
-              placeholder="Email"
-              v-model="form.email"
-            />
-          </div>
-          <div class="flex flex-col space-y-2">
-            <label
-              for="password"
-              class="mb-2 block text-sm font-bold text-gray-700"
-              >Password</label
-            >
-            <input
-              class="focus:shadow-outline w-full appearance-none rounded border py-2 px-3 leading-tight text-gray-700 shadow focus:outline-none"
-              type="password"
-              id="password"
-              placeholder="Email"
-              v-model="form.password"
-            />
-          </div>
-          <div class="flex flex-col space-y-2">
-            <button class="btn" type="submit">
-              <loading-button v-if="loading"></loading-button> Create
-            </button>
-            <button @click="clearForm" class="btn-warning" type="button">
-              Cancel
-            </button>
-          </div>
-        </div>
-      </form>
-    </base-modal>
+
+    <user-form
+      v-if="modalOpen && currentModal == 'create'"
+      :loading="loading"
+      :user="form"
+      @close="toggleModal('')"
+      @submit="handleSubmit('create')"
+      @clear="clearForm"
+    />
     <!-- end create modal -->
     <!-- update modal -->
-    <base-modal
-      size="lg"
-      v-if="modalOpen && currentModal === 'update'"
-      @close="toggleModal"
-      :footer="false"
-    >
-      <template #header>
-        <div>Update {{ form.name }}</div>
-      </template>
-      <form @submit.prevent="handleSubmit('update')">
-        <div class="flex flex-col space-y-2">
-          <div class="flex flex-col space-y-2">
-            <label for="name" class="mb-2 block text-sm font-bold text-gray-700"
-              >Name</label
-            >
-            <input
-              id="name"
-              class="focus:shadow-outline w-full appearance-none rounded border py-2 px-3 leading-tight text-gray-700 shadow focus:outline-none"
-              type="text"
-              placeholder="John Doe"
-              v-model="form.name"
-            />
-          </div>
-          <div class="flex flex-col space-y-2">
-            <label
-              for="email"
-              class="mb-2 block text-sm font-bold text-gray-700"
-              >Email</label
-            >
-            <input
-              id="email"
-              class="focus:shadow-outline w-full appearance-none rounded border py-2 px-3 leading-tight text-gray-700 shadow focus:outline-none"
-              type="email"
-              placeholder="Email"
-              v-model="form.email"
-            />
-          </div>
-          <div class="flex flex-col space-y-2">
-            <label
-              for="password"
-              class="mb-2 block text-sm font-bold text-gray-700"
-              >Password</label
-            >
-            <input
-              class="focus:shadow-outline w-full appearance-none rounded border py-2 px-3 leading-tight text-gray-700 shadow focus:outline-none"
-              type="password"
-              id="password"
-              placeholder="Password"
-              v-model="form.password"
-            />
-          </div>
-          <div class="flex flex-col space-y-2">
-            <button class="btn" type="submit">
-              <loading-button v-if="loading"></loading-button> Update
-            </button>
-            <button @click="clearForm" class="btn-warning" type="button">
-              Cancel
-            </button>
-          </div>
-        </div>
-      </form>
-    </base-modal>
+
+    <user-form
+      v-else-if="modalOpen && currentModal == 'update'"
+      :loading="loading"
+      :user="form"
+      @close="toggleModal('')"
+      @submit="handleSubmit('update')"
+      @clear="clearForm"
+    />
+
     <!-- end update modal -->
     <!-- delete modal -->
+
     <base-modal
       size="sm"
-      v-if="modalOpen && currentModal === 'delete'"
+      v-else-if="modalOpen && currentModal === 'delete'"
       @close="toggleModal"
     >
       <template #header>
@@ -310,6 +207,7 @@ const handleSubmit = async (type: string) => {
         <button class="btn-warning" @click="clearForm">Cancel</button>
       </template>
     </base-modal>
+
     <!-- end delete modal -->
   </div>
 </template>
@@ -325,5 +223,15 @@ const handleSubmit = async (type: string) => {
 
 .btn-danger {
   @apply rounded-md bg-red-500 p-2 text-white hover:bg-red-600;
+}
+
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
 }
 </style>
